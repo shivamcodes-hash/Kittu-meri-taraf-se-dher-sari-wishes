@@ -443,12 +443,8 @@ canvas {
 </div>
 
 <!-- MUSIC -->
-
-<audio id="music" loop>
-  <source src="piano.mp3" type="audio/mpeg">
-</audio>
-
-<script>
+<audio id="music" src="./piano.mp3" 
+preload="auto" loop></audio>
 
 // LOVE LETTER
 
@@ -503,16 +499,7 @@ function openLetter() {
 
   showLine();
 
-  document.getElementById("music").play().then(() => {
-
-    playing = true;
-
-    document.getElementById("musicBtn").innerText =
-      "🔊 MUSIC ON";
-
-  }).catch(() => {});
-
-}
+  playMusic();
 
 function showLine() {
 
@@ -545,39 +532,43 @@ function nextLine() {
 
 // MUSIC CONTROL
 
-let playing = false;
+const music = document.getElementById("music");
+const musicBtn = document.getElementById("musicBtn");
+
+musicBtn.innerText = "🔇 MUSIC OFF";
+
+async function playMusic() {
+  try {
+    await music.play();
+    musicBtn.innerText = "🔊 MUSIC ON";
+  } catch (error) {
+    musicBtn.innerText = "🎵 TAP TO PLAY";
+    console.log("Music error:", error);
+  }
+}
 
 function toggleMusic() {
 
-  const music = document.getElementById("music");
-
-  const btn = document.getElementById("musicBtn");
-
-  if(!playing) {
-
-    music.play().then(() => {
-
-      playing = true;
-
-      btn.innerText = "🔊 MUSIC ON";
-
-    }).catch(() => {
-
-      btn.innerText = "Tap again to play";
-
-    });
-
+  if (music.paused) {
+    playMusic();
   } else {
-
     music.pause();
-
-    playing = false;
-
-    btn.innerText = "🔇 MUSIC OFF";
-
+    musicBtn.innerText = "🔇 MUSIC OFF";
   }
 
 }
+
+music.addEventListener("play", () => {
+  musicBtn.innerText = "🔊 MUSIC ON";
+});
+
+music.addEventListener("pause", () => {
+  musicBtn.innerText = "🔇 MUSIC OFF";
+});
+
+music.addEventListener("error", () => {
+  musicBtn.innerText = "⚠️ AUDIO NOT FOUND";
+});
 
 // FLOATING HEARTS AND BUTTERFLIES
 
